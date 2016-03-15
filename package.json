@@ -1,0 +1,24 @@
+{
+  "name": "jthree-editor",
+  "version": "1.0.0",
+  "description": "it is test repository.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahyahya/jThree-Editor.git"
+  },
+  "author": "ahyahya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahyahya/jThree-Editor/issues"
+  },
+  "homepage": "https://github.com/ahyahya/jThree-Editor#readme",
+  "dependencies": {
+    "koa": "^1.2.0",
+    "koa-static": "^2.0.0"
+  }
+}
