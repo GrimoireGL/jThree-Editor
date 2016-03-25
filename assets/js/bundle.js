@@ -12,7 +12,7 @@
     EditorController.prototype.save_data = [];
 
     EditorController.prototype.latest = {
-      html: "",
+      html: "asdfasdaaaabbbbb",
       goml: "",
       js: ""
     };

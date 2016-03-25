@@ -8,8 +8,16 @@ var _ = require('lodash');
 var coffee = require('gulp-coffee');
 var runSequence = require('run-sequence');
 
-gulp.task('default', function () {
+gulp.task('build', function () {
   runSequence('compile-coffee', 'browserify');
+});
+
+gulp.task('watch', ['build'], function () {
+  gulp
+    .watch('./assets/coffee/**/*.coffee', ['build'])
+    .on('change', function (evt) {
+      console.log('File ' + evt.path.split('/').slice(-3).join('/') + ' was ' + evt.type + '. watching.');
+    });
 });
 
 gulp.task('browserify', function () {

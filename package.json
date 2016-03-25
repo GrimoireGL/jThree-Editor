@@ -32,7 +32,8 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "gulp && sails lift"
+    "start": "sails lift",
+    "watch": "gulp watch"
   },
   "main": "app.js",
   "repository": {

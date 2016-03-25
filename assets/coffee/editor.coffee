@@ -4,7 +4,7 @@ app = angular.module 'EditorApp', []
 class EditorController
   save_data: []
   latest:
-    html: ""
+    html: "asdfasdaaaabbbbb"
     goml: ""
     js: ""
   html: ""
