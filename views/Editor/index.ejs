@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>editor</title>
+</head>
+<body>
+  <div ng-app="EditorApp">
+    <div class="editor-container" ng-controller="EditorController as ctl">
+      <div class="html-data">
+        <textarea ng-model="ctl.latest.html"></textarea>
+      </div>
+      <div class="goml-data">
+        <textarea ng-model="ctl.latest.goml"></textarea>
+      </div>
+      <div class="js-data">
+        <textarea ng-model="ctl.latest.js"></textarea>
+      </div>
+      <div class="result">
+        <iframe src=""></iframe>
+      </div>
+      <div class="run">
+        <button ng-click="ctl.run()">run</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
