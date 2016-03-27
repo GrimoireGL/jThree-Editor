@@ -16,7 +16,7 @@ gulp.task('watch', ['build'], function () {
   gulp
     .watch('./assets/coffee/**/*.coffee', ['build'])
     .on('change', function (evt) {
-      console.log('File ' + evt.path.split('/').slice(-3).join('/') + ' was ' + evt.type + '. watching.');
+      console.log('File ' + evt.path + ' was ' + evt.type + '. watching.');
     });
 });
 

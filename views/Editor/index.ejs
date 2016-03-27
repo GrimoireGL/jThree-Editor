@@ -5,7 +5,7 @@
 </head>
 <body>
   <div ng-app="EditorApp">
-    <div class="editor-container" ng-controller="EditorController as ctl">
+    <div class="editor-container" ng-controller="EditorCtrl as ctl">
       <div class="html-data">
         <textarea ng-model="ctl.latest.html"></textarea>
       </div>
@@ -16,7 +16,7 @@
         <textarea ng-model="ctl.latest.js"></textarea>
       </div>
       <div class="result">
-        <iframe src=""></iframe>
+        <iframe ng-src="{{ctl.iframe_url}}"></iframe>
       </div>
       <div class="run">
         <button ng-click="ctl.run()">run</button>

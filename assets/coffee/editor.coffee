@@ -1,21 +1,32 @@
 angular = require 'angular'
 app = angular.module 'EditorApp', []
 
-class EditorController
-  save_data: []
-  latest:
-    html: "asdfasdaaaabbbbb"
-    goml: ""
-    js: ""
-  html: ""
-  iframe_url: ""
+class EditorCtrl
+  constructor: ($sce, $http) ->
+    @sce = $sce
+    @request  = $http
+    @save_data = []
+    @latest =
+      html: ""
+      goml: ""
+      js: ""
+    @iframe_url = ""
+
   run: ->
     @save_data.push @latest
-    console.log @latest
-    console.log "called"
-    @latest.html = ""
-    # $request.post('/api/codes', )
-    # send @latest, (url) ->
-    #   @iframe_url = url
+    @send()
 
-app.controller 'EditorController', EditorController
+  set_iframe_url: (url) ->
+    console.log @sce.trustAsResourceUrl(url), url
+    @iframe_url = @sce.trustAsResourceUrl url
+
+  send: ->
+    @request
+      .post '/api/code', @latest
+      .then (res) =>
+          console.log res
+          @set_iframe_url res.data.url
+        , (err) ->
+          console.error err
+
+app.controller 'EditorCtrl', ['$sce', '$http', EditorCtrl]

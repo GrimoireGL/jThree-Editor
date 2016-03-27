@@ -1,38 +1,50 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
-  var EditorController, angular, app;
+  var EditorCtrl, angular, app;
 
   angular = require('angular');
 
   app = angular.module('EditorApp', []);
 
-  EditorController = (function() {
-    function EditorController() {}
+  EditorCtrl = (function() {
+    function EditorCtrl($sce, $http) {
+      this.sce = $sce;
+      this.request = $http;
+      this.save_data = [];
+      this.latest = {
+        html: "",
+        goml: "",
+        js: ""
+      };
+      this.iframe_url = "";
+    }
 
-    EditorController.prototype.save_data = [];
-
-    EditorController.prototype.latest = {
-      html: "asdfasdaaaabbbbb",
-      goml: "",
-      js: ""
-    };
-
-    EditorController.prototype.html = "";
-
-    EditorController.prototype.iframe_url = "";
-
-    EditorController.prototype.run = function() {
+    EditorCtrl.prototype.run = function() {
       this.save_data.push(this.latest);
-      console.log(this.latest);
-      console.log("called");
-      return this.latest.html = "";
+      return this.send();
     };
 
-    return EditorController;
+    EditorCtrl.prototype.set_iframe_url = function(url) {
+      console.log(this.sce.trustAsResourceUrl(url), url);
+      return this.iframe_url = this.sce.trustAsResourceUrl(url);
+    };
+
+    EditorCtrl.prototype.send = function() {
+      return this.request.post('/api/code', this.latest).then((function(_this) {
+        return function(res) {
+          console.log(res);
+          return _this.set_iframe_url(res.data.url);
+        };
+      })(this), function(err) {
+        return console.error(err);
+      });
+    };
+
+    return EditorCtrl;
 
   })();
 
-  app.controller('EditorController', EditorController);
+  app.controller('EditorCtrl', ['$sce', '$http', EditorCtrl]);
 
 }).call(this);
 
