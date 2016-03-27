@@ -63,5 +63,5 @@
     "lodash": "^4.6.1",
     "run-sequence": "^1.1.5",
     "vinyl-source-stream": "^1.1.0"
-  }
+
 }

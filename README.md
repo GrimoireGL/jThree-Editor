@@ -1,3 +1,6 @@
 # jThree-Editor
 
-a [Sails](http://sailsjs.org) application
+
+it is test repository.
+
+for jThree reference
