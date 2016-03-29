@@ -1,62 +1,105 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
-  var EditorCtrl, angular, app;
+  var EditorCtrl, generateIframe, objectAssign, qs,
+    bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  angular = require('angular');
+  qs = require('qs');
 
-  app = angular.module('EditorApp', []);
+  objectAssign = require('object-assign');
+
+  generateIframe = require('./generate-iframe');
 
   EditorCtrl = (function() {
-    function EditorCtrl($sce, $http) {
-      this.sce = $sce;
-      this.request = $http;
-      this.save_data = [];
-      this.latest = {
-        html: "",
+    function EditorCtrl(scope, location1) {
+      this.scope = scope;
+      this.location = location1;
+      this.run = bind(this.run, this);
+      this.setStateFromUrl = bind(this.setStateFromUrl, this);
+      this.updateUrl = bind(this.updateUrl, this);
+      this.watchUrl = bind(this.watchUrl, this);
+      this.state = {
         goml: "",
         js: ""
       };
-      this.iframe_url = "";
+      this.setStateFromUrl();
+      this.watchUrl();
     }
 
+    EditorCtrl.prototype.watchUrl = function() {
+      return window.addEventListener("hashchange", this.setStateFromUrl);
+    };
+
+    EditorCtrl.prototype.updateUrl = function() {
+      return location.href = location.href.split('#')[0] + "#?" + qs.stringify(this.state);
+    };
+
+    EditorCtrl.prototype.setStateFromUrl = function() {
+      var query, ref;
+      query = ((ref = location.hash.match(/#\?(.+$)/)) != null ? ref[1] : void 0) || "";
+      return this.state = objectAssign(this.state, qs.parse(query));
+    };
+
     EditorCtrl.prototype.run = function() {
-      this.save_data.push(this.latest);
-      return this.send();
-    };
-
-    EditorCtrl.prototype.set_iframe_url = function(url) {
-      console.log(this.sce.trustAsResourceUrl(url), url);
-      return this.iframe_url = this.sce.trustAsResourceUrl(url);
-    };
-
-    EditorCtrl.prototype.send = function() {
-      return this.request.post('/api/code', this.latest).then((function(_this) {
-        return function(res) {
-          console.log(res);
-          return _this.set_iframe_url(res.data.url);
-        };
-      })(this), function(err) {
-        return console.error(err);
-      });
+      return generateIframe(this.state.goml, this.state.js);
     };
 
     return EditorCtrl;
 
   })();
 
-  app.controller('EditorCtrl', ['$sce', '$http', EditorCtrl]);
+  module.exports = EditorCtrl;
 
 }).call(this);
 
-},{"angular":4}],2:[function(require,module,exports){
+},{"./generate-iframe":3,"object-assign":7,"qs":8}],2:[function(require,module,exports){
+(function() {
+  var EditorCtrl, angular, app;
+
+  angular = require('angular');
+
+  app = angular.module('EditorApp', []);
+
+  EditorCtrl = require('./editor-ctrl');
+
+  app.controller('EditorCtrl', ['$scope', '$location', EditorCtrl]);
+
+}).call(this);
+
+},{"./editor-ctrl":1,"angular":6}],3:[function(require,module,exports){
+(function() {
+  var generateIframe;
+
+  generateIframe = function(gomlCode, jsCode) {
+    var code, doc, iframe, target;
+    iframe = document.createElement('iframe');
+    iframe.setAttribute('id', 'jthree-iframe');
+    code = "<!DOCTYPE html>\n<html lang=\"ja\">\n  <head>\n    <meta charset=\"utf-8\"/>\n    <script type=\"text/javascript\" src=\"/js/j3.js\"></script>\n  </head>\n  <body>\n    <div id=\"canvas\" class=\"canvasContainer\"/>\n    <script type=\"text/goml\">\n      <!-- your goml here --> " + gomlCode + "</script>\n<script type=\"text/javascript\">\n  //<![CDATA[\n    // your js here " + jsCode + "      //]]>\n    </script>\n  </body>\n</html>";
+    target = document.getElementById('target');
+    if (target.childNodes.length !== 0) {
+      target.removeChild(target.childNodes[0]);
+    }
+    target.appendChild(iframe);
+    console.log(document.getElementById('target'));
+    console.log(code);
+    doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(code);
+    return doc.close();
+  };
+
+  module.exports = generateIframe;
+
+}).call(this);
+
+},{}],4:[function(require,module,exports){
 (function() {
 
 
 }).call(this);
 
-},{}],3:[function(require,module,exports){
-arguments[4][2][0].apply(exports,arguments)
-},{"dup":2}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],6:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 /**
@@ -30644,4 +30687,519 @@ $provide.value("$locale", {
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[1,2,3]);
+},{}],7:[function(require,module,exports){
+/* eslint-disable no-unused-vars */
+'use strict';
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+},{}],8:[function(require,module,exports){
+'use strict';
+
+var Stringify = require('./stringify');
+var Parse = require('./parse');
+
+module.exports = {
+    stringify: Stringify,
+    parse: Parse
+};
+
+},{"./parse":9,"./stringify":10}],9:[function(require,module,exports){
+'use strict';
+
+var Utils = require('./utils');
+
+var internals = {
+    delimiter: '&',
+    depth: 5,
+    arrayLimit: 20,
+    parameterLimit: 1000,
+    strictNullHandling: false,
+    plainObjects: false,
+    allowPrototypes: false,
+    allowDots: false
+};
+
+internals.parseValues = function (str, options) {
+    var obj = {};
+    var parts = str.split(options.delimiter, options.parameterLimit === Infinity ? undefined : options.parameterLimit);
+
+    for (var i = 0; i < parts.length; ++i) {
+        var part = parts[i];
+        var pos = part.indexOf(']=') === -1 ? part.indexOf('=') : part.indexOf(']=') + 1;
+
+        if (pos === -1) {
+            obj[Utils.decode(part)] = '';
+
+            if (options.strictNullHandling) {
+                obj[Utils.decode(part)] = null;
+            }
+        } else {
+            var key = Utils.decode(part.slice(0, pos));
+            var val = Utils.decode(part.slice(pos + 1));
+
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                obj[key] = [].concat(obj[key]).concat(val);
+            } else {
+                obj[key] = val;
+            }
+        }
+    }
+
+    return obj;
+};
+
+internals.parseObject = function (chain, val, options) {
+    if (!chain.length) {
+        return val;
+    }
+
+    var root = chain.shift();
+
+    var obj;
+    if (root === '[]') {
+        obj = [];
+        obj = obj.concat(internals.parseObject(chain, val, options));
+    } else {
+        obj = options.plainObjects ? Object.create(null) : {};
+        var cleanRoot = root[0] === '[' && root[root.length - 1] === ']' ? root.slice(1, root.length - 1) : root;
+        var index = parseInt(cleanRoot, 10);
+        if (
+            !isNaN(index) &&
+            root !== cleanRoot &&
+            String(index) === cleanRoot &&
+            index >= 0 &&
+            (options.parseArrays && index <= options.arrayLimit)
+        ) {
+            obj = [];
+            obj[index] = internals.parseObject(chain, val, options);
+        } else {
+            obj[cleanRoot] = internals.parseObject(chain, val, options);
+        }
+    }
+
+    return obj;
+};
+
+internals.parseKeys = function (givenKey, val, options) {
+    if (!givenKey) {
+        return;
+    }
+
+    // Transform dot notation to bracket notation
+    var key = options.allowDots ? givenKey.replace(/\.([^\.\[]+)/g, '[$1]') : givenKey;
+
+    // The regex chunks
+
+    var parent = /^([^\[\]]*)/;
+    var child = /(\[[^\[\]]*\])/g;
+
+    // Get the parent
+
+    var segment = parent.exec(key);
+
+    // Stash the parent if it exists
+
+    var keys = [];
+    if (segment[1]) {
+        // If we aren't using plain objects, optionally prefix keys
+        // that would overwrite object prototype properties
+        if (!options.plainObjects && Object.prototype.hasOwnProperty(segment[1])) {
+            if (!options.allowPrototypes) {
+                return;
+            }
+        }
+
+        keys.push(segment[1]);
+    }
+
+    // Loop through children appending to the array until we hit depth
+
+    var i = 0;
+    while ((segment = child.exec(key)) !== null && i < options.depth) {
+        i += 1;
+        if (!options.plainObjects && Object.prototype.hasOwnProperty(segment[1].replace(/\[|\]/g, ''))) {
+            if (!options.allowPrototypes) {
+                continue;
+            }
+        }
+        keys.push(segment[1]);
+    }
+
+    // If there's a remainder, just add whatever is left
+
+    if (segment) {
+        keys.push('[' + key.slice(segment.index) + ']');
+    }
+
+    return internals.parseObject(keys, val, options);
+};
+
+module.exports = function (str, opts) {
+    var options = opts || {};
+    options.delimiter = typeof options.delimiter === 'string' || Utils.isRegExp(options.delimiter) ? options.delimiter : internals.delimiter;
+    options.depth = typeof options.depth === 'number' ? options.depth : internals.depth;
+    options.arrayLimit = typeof options.arrayLimit === 'number' ? options.arrayLimit : internals.arrayLimit;
+    options.parseArrays = options.parseArrays !== false;
+    options.allowDots = typeof options.allowDots === 'boolean' ? options.allowDots : internals.allowDots;
+    options.plainObjects = typeof options.plainObjects === 'boolean' ? options.plainObjects : internals.plainObjects;
+    options.allowPrototypes = typeof options.allowPrototypes === 'boolean' ? options.allowPrototypes : internals.allowPrototypes;
+    options.parameterLimit = typeof options.parameterLimit === 'number' ? options.parameterLimit : internals.parameterLimit;
+    options.strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
+
+    if (
+        str === '' ||
+        str === null ||
+        typeof str === 'undefined'
+    ) {
+        return options.plainObjects ? Object.create(null) : {};
+    }
+
+    var tempObj = typeof str === 'string' ? internals.parseValues(str, options) : str;
+    var obj = options.plainObjects ? Object.create(null) : {};
+
+    // Iterate over the keys and setup the new object
+
+    var keys = Object.keys(tempObj);
+    for (var i = 0; i < keys.length; ++i) {
+        var key = keys[i];
+        var newObj = internals.parseKeys(key, tempObj[key], options);
+        obj = Utils.merge(obj, newObj, options);
+    }
+
+    return Utils.compact(obj);
+};
+
+},{"./utils":11}],10:[function(require,module,exports){
+'use strict';
+
+var Utils = require('./utils');
+
+var internals = {
+    delimiter: '&',
+    arrayPrefixGenerators: {
+        brackets: function (prefix) {
+            return prefix + '[]';
+        },
+        indices: function (prefix, key) {
+            return prefix + '[' + key + ']';
+        },
+        repeat: function (prefix) {
+            return prefix;
+        }
+    },
+    strictNullHandling: false,
+    skipNulls: false,
+    encode: true
+};
+
+internals.stringify = function (object, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encode, filter, sort, allowDots) {
+    var obj = object;
+    if (typeof filter === 'function') {
+        obj = filter(prefix, obj);
+    } else if (Utils.isBuffer(obj)) {
+        obj = String(obj);
+    } else if (obj instanceof Date) {
+        obj = obj.toISOString();
+    } else if (obj === null) {
+        if (strictNullHandling) {
+            return encode ? Utils.encode(prefix) : prefix;
+        }
+
+        obj = '';
+    }
+
+    if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+        if (encode) {
+            return [Utils.encode(prefix) + '=' + Utils.encode(obj)];
+        }
+        return [prefix + '=' + obj];
+    }
+
+    var values = [];
+
+    if (typeof obj === 'undefined') {
+        return values;
+    }
+
+    var objKeys;
+    if (Array.isArray(filter)) {
+        objKeys = filter;
+    } else {
+        var keys = Object.keys(obj);
+        objKeys = sort ? keys.sort(sort) : keys;
+    }
+
+    for (var i = 0; i < objKeys.length; ++i) {
+        var key = objKeys[i];
+
+        if (skipNulls && obj[key] === null) {
+            continue;
+        }
+
+        if (Array.isArray(obj)) {
+            values = values.concat(internals.stringify(obj[key], generateArrayPrefix(prefix, key), generateArrayPrefix, strictNullHandling, skipNulls, encode, filter, sort, allowDots));
+        } else {
+            values = values.concat(internals.stringify(obj[key], prefix + (allowDots ? '.' + key : '[' + key + ']'), generateArrayPrefix, strictNullHandling, skipNulls, encode, filter, sort, allowDots));
+        }
+    }
+
+    return values;
+};
+
+module.exports = function (object, opts) {
+    var obj = object;
+    var options = opts || {};
+    var delimiter = typeof options.delimiter === 'undefined' ? internals.delimiter : options.delimiter;
+    var strictNullHandling = typeof options.strictNullHandling === 'boolean' ? options.strictNullHandling : internals.strictNullHandling;
+    var skipNulls = typeof options.skipNulls === 'boolean' ? options.skipNulls : internals.skipNulls;
+    var encode = typeof options.encode === 'boolean' ? options.encode : internals.encode;
+    var sort = typeof options.sort === 'function' ? options.sort : null;
+    var allowDots = typeof options.allowDots === 'undefined' ? false : options.allowDots;
+    var objKeys;
+    var filter;
+    if (typeof options.filter === 'function') {
+        filter = options.filter;
+        obj = filter('', obj);
+    } else if (Array.isArray(options.filter)) {
+        objKeys = filter = options.filter;
+    }
+
+    var keys = [];
+
+    if (typeof obj !== 'object' || obj === null) {
+        return '';
+    }
+
+    var arrayFormat;
+    if (options.arrayFormat in internals.arrayPrefixGenerators) {
+        arrayFormat = options.arrayFormat;
+    } else if ('indices' in options) {
+        arrayFormat = options.indices ? 'indices' : 'repeat';
+    } else {
+        arrayFormat = 'indices';
+    }
+
+    var generateArrayPrefix = internals.arrayPrefixGenerators[arrayFormat];
+
+    if (!objKeys) {
+        objKeys = Object.keys(obj);
+    }
+
+    if (sort) {
+        objKeys.sort(sort);
+    }
+
+    for (var i = 0; i < objKeys.length; ++i) {
+        var key = objKeys[i];
+
+        if (skipNulls && obj[key] === null) {
+            continue;
+        }
+
+        keys = keys.concat(internals.stringify(obj[key], key, generateArrayPrefix, strictNullHandling, skipNulls, encode, filter, sort, allowDots));
+    }
+
+    return keys.join(delimiter);
+};
+
+},{"./utils":11}],11:[function(require,module,exports){
+'use strict';
+
+var hexTable = (function () {
+    var array = new Array(256);
+    for (var i = 0; i < 256; ++i) {
+        array[i] = '%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase();
+    }
+
+    return array;
+}());
+
+exports.arrayToObject = function (source, options) {
+    var obj = options.plainObjects ? Object.create(null) : {};
+    for (var i = 0; i < source.length; ++i) {
+        if (typeof source[i] !== 'undefined') {
+            obj[i] = source[i];
+        }
+    }
+
+    return obj;
+};
+
+exports.merge = function (target, source, options) {
+    if (!source) {
+        return target;
+    }
+
+    if (typeof source !== 'object') {
+        if (Array.isArray(target)) {
+            target.push(source);
+        } else if (typeof target === 'object') {
+            target[source] = true;
+        } else {
+            return [target, source];
+        }
+
+        return target;
+    }
+
+    if (typeof target !== 'object') {
+        return [target].concat(source);
+    }
+
+    var mergeTarget = target;
+    if (Array.isArray(target) && !Array.isArray(source)) {
+        mergeTarget = exports.arrayToObject(target, options);
+    }
+
+	return Object.keys(source).reduce(function (acc, key) {
+        var value = source[key];
+
+        if (Object.prototype.hasOwnProperty.call(acc, key)) {
+            acc[key] = exports.merge(acc[key], value, options);
+        } else {
+            acc[key] = value;
+        }
+		return acc;
+    }, mergeTarget);
+};
+
+exports.decode = function (str) {
+    try {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+    } catch (e) {
+        return str;
+    }
+};
+
+exports.encode = function (str) {
+    // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
+    // It has been adapted here for stricter adherence to RFC 3986
+    if (str.length === 0) {
+        return str;
+    }
+
+    var string = typeof str === 'string' ? str : String(str);
+
+    var out = '';
+    for (var i = 0; i < string.length; ++i) {
+        var c = string.charCodeAt(i);
+
+        if (
+            c === 0x2D || // -
+            c === 0x2E || // .
+            c === 0x5F || // _
+            c === 0x7E || // ~
+            (c >= 0x30 && c <= 0x39) || // 0-9
+            (c >= 0x41 && c <= 0x5A) || // a-z
+            (c >= 0x61 && c <= 0x7A) // A-Z
+        ) {
+            out += string.charAt(i);
+            continue;
+        }
+
+        if (c < 0x80) {
+            out = out + hexTable[c];
+            continue;
+        }
+
+        if (c < 0x800) {
+            out = out + (hexTable[0xC0 | (c >> 6)] + hexTable[0x80 | (c & 0x3F)]);
+            continue;
+        }
+
+        if (c < 0xD800 || c >= 0xE000) {
+            out = out + (hexTable[0xE0 | (c >> 12)] + hexTable[0x80 | ((c >> 6) & 0x3F)] + hexTable[0x80 | (c & 0x3F)]);
+            continue;
+        }
+
+        i += 1;
+        c = 0x10000 + (((c & 0x3FF) << 10) | (string.charCodeAt(i) & 0x3FF));
+        out += (hexTable[0xF0 | (c >> 18)] + hexTable[0x80 | ((c >> 12) & 0x3F)] + hexTable[0x80 | ((c >> 6) & 0x3F)] + hexTable[0x80 | (c & 0x3F)]);
+    }
+
+    return out;
+};
+
+exports.compact = function (obj, references) {
+    if (typeof obj !== 'object' || obj === null) {
+        return obj;
+    }
+
+    var refs = references || [];
+    var lookup = refs.indexOf(obj);
+    if (lookup !== -1) {
+        return refs[lookup];
+    }
+
+    refs.push(obj);
+
+    if (Array.isArray(obj)) {
+        var compacted = [];
+
+        for (var i = 0; i < obj.length; ++i) {
+            if (typeof obj[i] !== 'undefined') {
+                compacted.push(obj[i]);
+            }
+        }
+
+        return compacted;
+    }
+
+    var keys = Object.keys(obj);
+    for (var j = 0; j < keys.length; ++j) {
+        var key = keys[j];
+        obj[key] = exports.compact(obj[key], refs);
+    }
+
+    return obj;
+};
+
+exports.isRegExp = function (obj) {
+    return Object.prototype.toString.call(obj) === '[object RegExp]';
+};
+
+exports.isBuffer = function (obj) {
+    if (obj === null || typeof obj === 'undefined') {
+        return false;
+    }
+
+    return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
+};
+
+},{}]},{},[1,2,3,4,5]);

@@ -6,17 +6,14 @@
 <body>
   <div ng-app="EditorApp">
     <div class="editor-container" ng-controller="EditorCtrl as ctl">
-      <div class="html-data">
-        <textarea ng-model="ctl.latest.html"></textarea>
-      </div>
       <div class="goml-data">
-        <textarea ng-model="ctl.latest.goml"></textarea>
+        <textarea ng-model="ctl.state.goml" ng-keyup="ctl.updateUrl()"></textarea>
       </div>
       <div class="js-data">
-        <textarea ng-model="ctl.latest.js"></textarea>
+        <textarea ng-model="ctl.state.js" ng-keyup="ctl.updateUrl()"></textarea>
       </div>
       <div class="result">
-        <iframe ng-src="{{ctl.iframe_url}}"></iframe>
+        <div id="target"></div>
       </div>
       <div class="run">
         <button ng-click="ctl.run()">run</button>
