@@ -1,6 +1,6 @@
 qs = require 'qs'
 objectAssign = require 'object-assign'
-generateIframe = require './generate-iframe'
+IframeCtrl = require './iframe-ctrl'
 Editor = require './ace'
 gomlEditor = new Editor 'goml'
 jsEditor = new Editor 'javascript'
@@ -9,6 +9,7 @@ jsBeautify = beautify.js_beautify
 gomlBeautify = beautify.html_beautify
 $ = require 'jquery'
 request = require 'request'
+modal = require './modal'
 
 class EditorCtrl
   constructor: (@scope, @location) ->
@@ -17,6 +18,7 @@ class EditorCtrl
       js: ""
     @setStateFromUrl()
     @watchEditors()
+    @iframe = new IframeCtrl()
 
   watchEditors: =>
     gomlEditor.watch (code) =>
@@ -35,8 +37,6 @@ class EditorCtrl
       $ '#generate'
         .click =>
           @generateUrl()
-
-
 
   updateUrl: =>
     location.replace location.href.split('#')[0]+"#?"+qs.stringify(@state)
@@ -65,16 +65,16 @@ class EditorCtrl
       @setCode @state
 
   generateUrl: =>
-    key = Math.random().toString(36).slice(-8);
+    key = Math.random().toString(36).slice(-12);
     query = "?" + qs.stringify(@state)
     console.log {key, query}
     request
       .post "#{location.origin}/shorturl/", form: {key, query}, (err, res, body) =>
         if err || String(res.statusCode)[0] != "2"
           console.log err
-        console.log body
+        modal.shortUrl "#{location.origin}/preview/#{key}"
 
   run: =>
-    generateIframe @state.goml, @state.js
+    @iframe.generateIframe @state.goml, @state.js
 
 module.exports = EditorCtrl
