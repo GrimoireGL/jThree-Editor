@@ -37,8 +37,8 @@ module.exports.routes = {
   },
 
   // 'post /api/code/:id': 'CodeController.index',
-  'get /preview/': 'ShortUrl.index',
-  'get /preview/:key': 'ShortUrl.index',
+  'get /preview/': 'ShortUrl.redirect',
+  'get /preview/:key': 'ShortUrl.redirect',
 
   /***************************************************************************
   *                                                                          *

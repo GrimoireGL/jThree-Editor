@@ -1,3 +1,6 @@
+// Color variables (appears count calculates by raw css)
+@color0: #dddddd; // Appears 3 times
+
 .editor-container {
   background: #fafafa;
 }
@@ -7,38 +10,72 @@
   width: 100%;
 }
 
-.clearfix:after {
-  content: "";
-  display: block;
-  clear: both;
+.clearfix {
+  &:after {
+    clear: both;
+    content: "";
+    display: block;
+  }
 }
 
 .left-side {
   float: left;
+  width: 50%;
 }
 
 .right-side {
+  border-left: 1px solid @color0;
+  box-sizing: border-box;
   float: right;
-  width: 50%;
   height: 100vh;
-  border-left: 1px solid #ddd;
+  width: 50%;
 }
 
 .goml-editor {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid @color0;
+  box-sizing: border-box;
+}
+
+.left-top-wrapper {
+  box-sizing: border-box;
+  padding: 40px 60px;
+  height: 40vh;
+  border-bottom: 1px solid @color0;
+}
+
+.jthree-logo {
+  float: left;
+}
+
+.name-logo {
+  margin: -60px 0;
+}
+
+.function-buttons {
+  float: left;
+  margin-left: 60px;
+  padding-top: 30px;
+
+  span {
+    line-height: 30px;
+    vertical-align: center;
+  }
+
+  > div {
+    padding: 10px 0;
+    cursor: pointer;;
+  }
+}
+
+.function-icon {
+  opacity: 0.9;
+  vertical-align: middle;
+  margin-right: 8px;
 }
 
 #jthree-iframe {
   border: none;
-  width: 600px;
-  height: 400px;
+  height: 60vh;
+  width: 100%;
+  vertical-align: bottom;
 }
-
-// .editor * {
-//   font-family: 'CamingoCode';
-// }
-
-// @font-face {
-//   font-family: 'CamingoCode';
-//   src: url('/fonts/CamingoCode/CamingoCode-Regular.ttf') format('truetype');
-// }

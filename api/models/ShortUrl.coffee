@@ -6,8 +6,13 @@
 module.exports =
 
   attributes:
-    key: 'string'
-    query: 'string'
+    key:
+      type: 'string'
+      unique: true
+      required: true
+    query:
+      type: 'string'
+      required: true
 
     toJSON: ->
       {key, query} = @toObject()

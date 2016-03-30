@@ -4,7 +4,7 @@
  # @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
 
 module.exports =
-  index: (req, res) ->
+  redirect: (req, res) ->
     key = req.param('key')
     return res.redirect "/editor/" if !key?
     ShortUrl

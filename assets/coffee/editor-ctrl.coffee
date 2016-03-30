@@ -8,6 +8,7 @@ beautify = require('js-beautify')
 jsBeautify = beautify.js_beautify
 gomlBeautify = beautify.html_beautify
 $ = require 'jquery'
+request = require 'request'
 
 class EditorCtrl
   constructor: (@scope, @location) ->
@@ -31,6 +32,10 @@ class EditorCtrl
       $ '#reformat'
         .click =>
           @format()
+      $ '#generate'
+        .click =>
+          @generateUrl()
+
 
 
   updateUrl: =>
@@ -58,6 +63,16 @@ class EditorCtrl
     js = jsBeautify @state.js, indent_size: 2
     @setState { goml, js }, =>
       @setCode @state
+
+  generateUrl: =>
+    key = Math.random().toString(36).slice(-8);
+    query = "?" + qs.stringify(@state)
+    console.log {key, query}
+    request
+      .post "#{location.origin}/shorturl/", form: {key, query}, (err, res, body) =>
+        if err || String(res.statusCode)[0] != "2"
+          console.log err
+        console.log body
 
   run: =>
     generateIframe @state.goml, @state.js
