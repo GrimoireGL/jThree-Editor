@@ -2,21 +2,24 @@
 <html>
 <head>
   <title>editor</title>
+  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css">
 </head>
 <body>
-  <div ng-app="EditorApp">
-    <div class="editor-container" ng-controller="EditorCtrl as ctl">
-      <div class="goml-data">
-        <textarea ng-model="ctl.state.goml" ng-keyup="ctl.updateUrl()"></textarea>
+  <div>
+    <div class="editor-container .clearfix">
+      <div class="left-side">
+        <div id="goml-editor" style="height: 50vh"></div>
+        <div id="javascript-editor" style="height: 50vh"></div>
       </div>
-      <div class="js-data">
-        <textarea ng-model="ctl.state.js" ng-keyup="ctl.updateUrl()"></textarea>
-      </div>
-      <div class="result">
-        <div id="target"></div>
-      </div>
-      <div class="run">
-        <button ng-click="ctl.run()">run</button>
+      <div class="right-side">
+        <div class="result">
+          <div id="target">
+            <iframe id="jthree-iframe"></iframe>
+          </div>
+        </div>
+        <div class="run">
+          <button id="execute">run</button>
+        </div>
       </div>
     </div>
   </div>

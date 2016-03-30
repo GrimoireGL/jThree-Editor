@@ -1,11 +1,15 @@
-generateIframe = (gomlCode, jsCode) ->
-  iframe = document.createElement('iframe')
-  iframe.setAttribute('id', 'jthree-iframe')
+$ = require 'jquery'
+generateIframe = (gomlCode, jsCode) -> $ ->
+  iframe = $('<iframe id="jthree-iframe"></iframe>')[0]
   code = """
     <!DOCTYPE html>
     <html lang="ja">
       <head>
         <meta charset="utf-8"/>
+        <script>
+          //<![CDATA[
+          //]]>
+        </script>
         <script type="text/javascript" src="/js/j3.js"></script>
       </head>
       <body>
@@ -23,12 +27,7 @@ generateIframe = (gomlCode, jsCode) ->
       </body>
     </html>
   """
-  target = document.getElementById('target')
-  if target.childNodes.length != 0
-    target.removeChild(target.childNodes[0])
-  target.appendChild iframe
-  console.log document.getElementById('target')
-  console.log code
+  $('#target').html(iframe)
   doc = iframe.contentWindow.document
   doc.open()
   doc.write code
