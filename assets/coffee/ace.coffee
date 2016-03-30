@@ -1,7 +1,7 @@
 ace = require 'brace'
 require 'brace/mode/javascript'
 require 'brace/mode/xml'
-require 'brace/theme/monokai'
+require 'brace/theme/jthree'
 
 class Ace
   constructor: (editorName) ->
@@ -9,7 +9,13 @@ class Ace
     @editorLang = if editorName == "goml" then "xml" else editorName
     @editor = ace.edit("#{@editorName}-editor")
     @editor.getSession().setMode "ace/mode/#{@editorLang}"
-    @editor.setTheme 'ace/theme/monokai'
+    @editor.setTheme 'ace/theme/jthree'
+    @editor.getSession().setTabSize(2)
+    @editor.getSession().setUseWrapMode(true)
+    @editor.setOptions
+      enableBasicAutocompletion: true
+      enableSnippets: true
+      enableLiveAutocompletion: true
 
   watch: (callback) =>
     @editor.getSession().on 'change',  =>

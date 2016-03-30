@@ -6,14 +6,13 @@ generateIframe = (gomlCode, jsCode) -> $ ->
     <html lang="ja">
       <head>
         <meta charset="utf-8"/>
-        <script>
-          //<![CDATA[
-          //]]>
-        </script>
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css">
         <script type="text/javascript" src="/js/j3.js"></script>
       </head>
       <body>
-        <div id="canvas" class="canvasContainer"/>
+        <div class="container" style="background: #fafafa; height: 100vh;">
+          <div id="canvas" class="canvasContainer"/>
+        </div>
         <script type="text/goml">
           <!-- your goml here --> """ +
           gomlCode + """

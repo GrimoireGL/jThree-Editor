@@ -6,20 +6,24 @@
 </head>
 <body>
   <div>
-    <div class="editor-container .clearfix">
+    <div class="editor-container clearfix">
       <div class="left-side">
-        <div id="goml-editor" style="height: 50vh"></div>
-        <div id="javascript-editor" style="height: 50vh"></div>
-      </div>
-      <div class="right-side">
+        <div>
+          <a href="http://jthree.io/"><img src="/images/jthree-logo.svg" height="100"></a>
+          <a href="http://jthree.io/"><img src="/images/jthree-name.svg" height="100"></a>
+          <button id="execute">run</button>
+          <button id="reformat">format code</button>
+          <button id="short-url">generate short url</button>
+        </div>
         <div class="result">
           <div id="target">
             <iframe id="jthree-iframe"></iframe>
           </div>
         </div>
-        <div class="run">
-          <button id="execute">run</button>
-        </div>
+      </div>
+      <div class="right-side">
+        <div id="goml-editor" class="editor goml-editor"></div>
+        <div id="javascript-editor" class="editor javascript-editor"></div>
       </div>
     </div>
   </div>

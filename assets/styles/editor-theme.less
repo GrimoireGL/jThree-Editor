@@ -1,4 +1,8 @@
-.goml-editor, .javascript-editor {
+.editor-container {
+  background: #fafafa;
+}
+
+.editor {
   height: 50vh;
   width: 100%;
 }
@@ -11,10 +15,30 @@
 
 .left-side {
   float: left;
-  width: 50%;
-  height: 100vh;
 }
 
 .right-side {
-  float: left;
+  float: right;
+  width: 50%;
+  height: 100vh;
+  border-left: 1px solid #ddd;
 }
+
+.goml-editor {
+  border-bottom: 1px solid #ddd;
+}
+
+#jthree-iframe {
+  border: none;
+  width: 600px;
+  height: 400px;
+}
+
+// .editor * {
+//   font-family: 'CamingoCode';
+// }
+
+// @font-face {
+//   font-family: 'CamingoCode';
+//   src: url('/fonts/CamingoCode/CamingoCode-Regular.ttf') format('truetype');
+// }
