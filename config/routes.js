@@ -36,7 +36,9 @@ module.exports.routes = {
     view: 'homepage'
   },
 
-  'post /api/code/:id': 'CodeController.index',
+  // 'post /api/code/:id': 'CodeController.index',
+  'get /preview/': 'ShortUrl.index',
+  'get /preview/:key': 'ShortUrl.index',
 
   /***************************************************************************
   *                                                                          *
